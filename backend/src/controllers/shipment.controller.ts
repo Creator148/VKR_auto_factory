@@ -1,4 +1,3 @@
-// src/controllers/shipment.controller.ts
 import { Request, Response } from "express";
 import { shipmentService } from "../services/shipment.service";
 

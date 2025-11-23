@@ -1,36 +1,41 @@
-// src/services/tender.service.ts
 import mockContracts from "./mockContracts.service";
-import { Tender, Bid } from "../models";
 
-interface CreateTenderPayload {
-  title: string;
-  description: string;
-  budget: number;
-  deadline: number;
-  detailsCID: string;
+class TenderService {
+  async createTender(
+    requesterAddress: string,
+    detailsCID: string,
+    deadline: number,
+    payload: { title?: string; description?: string; budget?: number }
+  ) {
+    return mockContracts.createTender(requesterAddress, detailsCID, deadline, payload);
+  }
+
+  async getTender(id: string) {
+    return mockContracts.getTender(id);
+  }
+
+  async getAllTenders() {
+    // Можно сделать DB-level query, но MVP — через mockContracts
+    return []; // TODO: можно вернуть Tender.findAll()
+  }
+
+  async submitBid(
+    tenderId: string,
+    supplierAddress: string,
+    price: number,
+    deliveryTime: string,
+    metadataCID?: string
+  ) {
+    return mockContracts.submitBid(tenderId, supplierAddress, price, deliveryTime, metadataCID);
+  }
+
+  async awardBid(tenderId: string, bidId: string, callerAddress: string) {
+    return mockContracts.awardBid(tenderId, bidId, callerAddress);
+  }
+
+  async getBids(tenderId: string) {
+    return mockContracts.getBids(tenderId);
+  }
 }
 
-
-export class TenderService {
-  async createTender(userAddress: string, payload: CreateTenderPayload) {
-    // вызываем мок — он создаст запись в БД и вернёт txHash & tenderId
-    const result = await mockContracts.createTender(userAddress, payload.detailsCID, payload.deadline, {
-      title: payload.title,
-      description: payload.description,
-      budget: payload.budget,
-    });
-
-    // result: { txHash, tenderId }
-    return result;
-  }
-
-  async submitBid(tenderId: number, supplierAddress: string, price: number, deliveryTime: string, metadataCID?: string) {
-    const result = await mockContracts.submitBid(tenderId, supplierAddress, price, deliveryTime, metadataCID);
-    return result;
-  }
-
-  async awardBid(tenderId: number, bidId: number, callerAddress: string) {
-    const result = await mockContracts.awardBid(tenderId, bidId, callerAddress);
-    return result;
-  }
-}
+export default new TenderService();

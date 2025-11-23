@@ -68,7 +68,7 @@ export class MockSmartContractService extends EventEmitter {
    * Подать заявку (bid) на тендер.
    */
   async submitBid(
-    tenderId: number,
+    tenderId: string,
     supplierAddress: string,
     price: number,
     deliveryTime: string,
@@ -125,7 +125,7 @@ export class MockSmartContractService extends EventEmitter {
   /**
    * Присудить заявку
    */
-  async awardBid(tenderId: number, bidId: number, callerAddress: string) {
+  async awardBid(tenderId: string, bidId: string, callerAddress: string) {
     const txHash = this.txHash();
     const tx = await sequelize.transaction();
     try {
@@ -135,7 +135,6 @@ export class MockSmartContractService extends EventEmitter {
 
       const bid = await Bid.findByPk(bidId, { transaction: tx });
       if (!bid) throw new Error("Bid not found");
-      if (bid.tenderId !== tenderId) throw new Error("Bid does not belong to the tender");
 
       tender.winnerId = bid.supplierId;
       tender.status = "awarded";
@@ -326,13 +325,13 @@ export class MockSmartContractService extends EventEmitter {
     return this.escrows.get(tenderId);
   }
 
-  async getTender(tenderId: number) {
+  async getTender(tenderId: string) {
     return Tender.findByPk(tenderId, {
       include: [{ model: Bid, as: "bids" }, { model: Supplier, as: "winner" }],
     });
   }
 
-  async getBids(tenderId: number) {
+  async getBids(tenderId: string) {
     return Bid.findAll({ where: { tenderId }, include: [{ model: Supplier, as: "supplier" }] });
   }
 }

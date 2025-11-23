@@ -1,4 +1,3 @@
-// src/routes/shipment.routes.ts
 import { Router } from "express";
 import { shipmentController } from "../controllers/shipment.controller";
 
