@@ -1,13 +1,32 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../db/config";
 
-export class Supplier extends Model {}
+interface SupplierAttributes {
+  id: number;
+  name: string;
+  contactEmail: string;
+}
+
+interface SupplierCreationAttributes extends Optional<SupplierAttributes, "id"> {}
+
+export class Supplier
+  extends Model<SupplierAttributes, SupplierCreationAttributes>
+  implements SupplierAttributes
+{
+  public id!: number;
+  public name!: string;
+  public contactEmail!: string;
+}
 
 Supplier.init(
   {
-    id: { type: DataTypes.UUID, primaryKey: true, defaultValue: DataTypes.UUIDV4 },
-    name: { type: DataTypes.STRING, allowNull: false },
-    contactEmail: { type: DataTypes.STRING, allowNull: false },
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: DataTypes.STRING,
+    contactEmail: DataTypes.STRING,
   },
   {
     sequelize,

@@ -1,17 +1,44 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../db/config";
 
-export class Shipment extends Model {}
+export interface ShipmentAttributes {
+  id: number;
+  trackingId: string;
+  status: string;
+  eta: Date;
+  tenderId: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ShipmentCreationAttributes
+  extends Optional<ShipmentAttributes, "id"> {}
+
+export class Shipment
+  extends Model<ShipmentAttributes, ShipmentCreationAttributes>
+  implements ShipmentAttributes
+{
+  public id!: number;
+  public trackingId!: string;
+  public status!: string;
+  public eta!: Date;
+  public tenderId!: number;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 Shipment.init(
   {
-    id: { type: DataTypes.UUID, primaryKey: true, defaultValue: DataTypes.UUIDV4 },
-    trackingId: { type: DataTypes.STRING, allowNull: false },
-    status: {
-      type: DataTypes.ENUM("created", "in_transit", "arrived", "delivered"),
-      defaultValue: "created",
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
     },
+    trackingId: { type: DataTypes.STRING, allowNull: false },
+    status: { type: DataTypes.STRING, allowNull: false },
     eta: { type: DataTypes.DATE, allowNull: false },
+    tenderId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
   },
   {
     sequelize,
