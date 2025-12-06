@@ -2,11 +2,11 @@ import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../db/config";
 
 export interface BidAttributes {
-  id: number;
+  id: string;
   price: number;
   deliveryTime: string;
   comment?: string | null;
-  tenderId: number;
+  tenderId: string;
   supplierId: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -19,11 +19,11 @@ export class Bid
   extends Model<BidAttributes, BidCreationAttributes>
   implements BidAttributes
 {
-  public id!: number;
+  public id!: string;
   public price!: number;
   public deliveryTime!: string;
   public comment!: string | null;
-  public tenderId!: number;
+  public tenderId!: string;
   public supplierId!: number;
 
   public readonly createdAt!: Date;

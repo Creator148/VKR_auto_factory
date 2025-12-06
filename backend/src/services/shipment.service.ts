@@ -1,9 +1,10 @@
 import mockContracts from "./mockContracts.service";
 import { Shipment } from "../models";
 import { Op } from "sequelize";
+import { isNull } from "util";
 
 export interface CreateShipmentDTO {
-  tenderId: number;
+  tenderId: string;
   shipperAddress: string;
   trackingId: string;
   eta: string;             
@@ -13,7 +14,7 @@ export interface CreateShipmentDTO {
 export class ShipmentService {
   async createShipment(dto: CreateShipmentDTO) {
     if (!dto.trackingId) throw new Error("Tracking ID is required");
-    if (isNaN(dto.tenderId)) throw new Error("Invalid tenderId");
+    if (isNull(dto.tenderId)) throw new Error("Invalid tenderId");
 
     const result = await mockContracts.recordShipment(
       dto.tenderId,
@@ -41,8 +42,8 @@ export class ShipmentService {
     if (!shipment) throw new Error("Shipment not found");
     return shipment;
   }
-  async getShipmentsByTenderId(tenderId: number) {
-    if (isNaN(tenderId)) throw new Error("Invalid tenderId");
+  async getShipmentsByTenderId(tenderId: string) {
+    if (isNull(tenderId)) throw new Error("Invalid tenderId");
 
     return Shipment.findAll({
       where: { tenderId },
@@ -62,4 +63,4 @@ export class ShipmentService {
   }
 }
 
-export const shipmentService = new ShipmentService();
+export default new ShipmentService();

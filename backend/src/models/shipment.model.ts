@@ -6,7 +6,7 @@ export interface ShipmentAttributes {
   trackingId: string;
   status: string;
   eta: Date;
-  tenderId: number;
+  tenderId: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -22,7 +22,7 @@ export class Shipment
   public trackingId!: string;
   public status!: string;
   public eta!: Date;
-  public tenderId!: number;
+  public tenderId!: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
