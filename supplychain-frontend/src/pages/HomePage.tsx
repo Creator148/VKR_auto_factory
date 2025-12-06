@@ -9,7 +9,7 @@ const HomePage = () => {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/tenders", {
+      const res = await fetch("http://localhost:5000/api/tenders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -20,7 +20,9 @@ const HomePage = () => {
       });
 
       const data = await res.json();
-      navigate(`/tender/${data.id}`);
+
+      navigate(`/tender/${data.tenderId}`);
+      
     } catch (err) {
       console.error(err);
       alert("Failed to start demo");
@@ -37,15 +39,13 @@ const HomePage = () => {
 
       <p className="text-gray-600 mb-10 text-center max-w-xl">
         This demo shows the full lifecycle of blockchain-inspired tender
-        management: tender creation → bids → awarding → shipment →
-        payment.  
-        Press the button below to begin.
+        management...
       </p>
 
       <button
         onClick={startDemo}
         disabled={loading}
-        className="px-8 py-4 text-lg font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-8 py-4 text-lg font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
       >
         {loading ? "Starting demo..." : "Start Demo Process"}
       </button>
