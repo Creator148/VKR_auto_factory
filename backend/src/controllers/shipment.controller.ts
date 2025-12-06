@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { shipmentService } from "../services/shipment.service";
+import shipmentService, { ShipmentService } from "../services/shipment.service";
 
 class ShipmentController {
   /**
@@ -10,7 +10,7 @@ class ShipmentController {
       const { tenderId, shipperAddress, trackingId, eta, docCID } = req.body;
 
       const result = await shipmentService.createShipment({
-        tenderId: Number(tenderId),
+        tenderId: tenderId,
         shipperAddress,
         trackingId,
         eta,
@@ -69,7 +69,7 @@ class ShipmentController {
    */
   async getShipmentsByTender(req: Request, res: Response) {
     try {
-      const tenderId = Number(req.params.tenderId);
+      const tenderId = req.params.tenderId;
       const shipments = await shipmentService.getShipmentsByTenderId(tenderId);
       return res.json(shipments);
     } catch (error: any) {
