@@ -125,7 +125,7 @@ export class MockSmartContractService extends EventEmitter {
   /**
    * Присудить заявку
    */
-  async awardBid(tenderId: string, bidId: string, callerAddress: string) {
+  async awardBid(tenderId: number, bidId: number, callerAddress: string) {
     const txHash = this.txHash();
     const tx = await sequelize.transaction();
     try {
@@ -331,7 +331,7 @@ export class MockSmartContractService extends EventEmitter {
     });
   }
 
-  async getBids(tenderId: string) {
+  async getBids(tenderId: number) {
     return Bid.findAll({ where: { tenderId }, include: [{ model: Supplier, as: "supplier" }] });
   }
 }

@@ -6,9 +6,10 @@ class PaymentController {
     try {
       const { tenderId } = req.params;
       const { payerAddress, beneficiaryAddress, amount } = req.body;
+      const tenderIdNumber = parseInt(tenderId, 10);
 
       const result = await PaymentService.depositFunds(
-        tenderId,
+        tenderIdNumber,
         payerAddress,
         beneficiaryAddress,
         amount
@@ -24,8 +25,9 @@ class PaymentController {
     try {
       const { tenderId } = req.params;
       const { shipmentId } = req.body;
+      const tenderIdNumber = parseInt(tenderId, 10);
 
-      const result = await PaymentService.releasePayment(tenderId, shipmentId);
+      const result = await PaymentService.releasePayment(tenderIdNumber, shipmentId);
 
       res.json(result);
     } catch (err: any) {
@@ -37,8 +39,9 @@ class PaymentController {
     try {
       const { tenderId } = req.params;
       const { callerAddress } = req.body;
+      const tenderIdNumber = parseInt(tenderId, 10);
 
-      const result = await PaymentService.refund(tenderId, callerAddress);
+      const result = await PaymentService.refund(tenderIdNumber, callerAddress);
 
       res.json(result);
     } catch (err: any) {
@@ -49,8 +52,8 @@ class PaymentController {
   async getEscrow(req: Request, res: Response) {
     try {
       const { tenderId } = req.params;
-
-      const result = await PaymentService.getEscrow(tenderId);
+      const tenderIdNumber = parseInt(tenderId, 10);
+      const result = await PaymentService.getEscrow(tenderIdNumber);
 
       res.json(result);
     } catch (err: any) {
@@ -61,7 +64,8 @@ class PaymentController {
   async getByTender(req: Request, res: Response) {
     try {
       const { tenderId } = req.params;
-      const payments = await PaymentService.getPaymentsByTender(tenderId);
+      const tenderIdNumber = parseInt(tenderId, 10);
+      const payments = await PaymentService.getPaymentsByTender(tenderIdNumber);
       res.json(payments);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -71,7 +75,8 @@ class PaymentController {
   async getOne(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const payment = await PaymentService.getPaymentById(id);
+      const paymentId = parseInt(id, 10);
+      const payment = await PaymentService.getPaymentById(paymentId);
       res.json(payment);
     } catch (err: any) {
       res.status(400).json({ error: err.message });

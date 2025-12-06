@@ -4,7 +4,8 @@ import BidService from "../services/bid.service";
 class BidController {
   async getOne(req: Request, res: Response) {
     try {
-      const bid = await BidService.getBidById(req.params.id);
+      const id = parseInt(req.params.id, 10);
+      const bid = await BidService.getBidById(id);
       res.json(bid);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -13,7 +14,8 @@ class BidController {
 
   async getByTender(req: Request, res: Response) {
     try {
-      const bids = await BidService.getBidsByTender(req.params.tenderId);
+      const id = parseInt(req.params.tenderId, 10);
+      const bids = await BidService.getBidsByTender(id);
       res.json(bids);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -31,7 +33,8 @@ class BidController {
 
   async updateBid(req: Request, res: Response) {
     try {
-      const bid = await BidService.updateBid(req.params.id, req.body);
+      const id = parseInt(req.params.id, 10);
+      const bid = await BidService.updateBid(id, req.body);
       res.json(bid);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -40,7 +43,8 @@ class BidController {
 
   async deleteBid(req: Request, res: Response) {
     try {
-      const result = await BidService.deleteBid(req.params.id);
+      const id = parseInt(req.params.id, 10);
+      const result = await BidService.deleteBid(id);
       res.json(result);
     } catch (err: any) {
       res.status(400).json({ error: err.message });

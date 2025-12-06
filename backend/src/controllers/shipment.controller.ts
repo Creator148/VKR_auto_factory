@@ -70,7 +70,7 @@ class ShipmentController {
   async getShipmentsByTender(req: Request, res: Response) {
     try {
       const tenderId = req.params.tenderId;
-      const shipments = await shipmentService.getShipmentsByTenderId(tenderId);
+      const shipments = await shipmentService.getShipmentsByTenderId(parseInt(tenderId));
       return res.json(shipments);
     } catch (error: any) {
       console.error("getShipmentsByTender error:", error);

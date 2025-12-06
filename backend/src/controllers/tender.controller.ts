@@ -47,7 +47,7 @@ class TenderController {
       const { id } = req.params; // tenderId
       const { supplierAddress, price, deliveryTime, metadataCID } = req.body;
 
-      const result = await TenderService.submitBid(id, supplierAddress, price, deliveryTime, metadataCID);
+      const result = await TenderService.submitBid(parseInt(id), supplierAddress, price, deliveryTime, metadataCID);
       return res.json(result);
     } catch (err: any) {
       console.error("submitBid error:", err);
@@ -60,7 +60,7 @@ class TenderController {
       const { id } = req.params; // tenderId
       const { bidId, callerAddress } = req.body;
 
-      const result = await TenderService.awardBid(id, bidId, callerAddress);
+      const result = await TenderService.awardBid(parseInt(id), bidId, callerAddress);
       return res.json(result);
     } catch (err: any) {
       console.error("awardBid error:", err);
@@ -71,7 +71,7 @@ class TenderController {
   async getBids(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const bids = await TenderService.getBids(id);
+      const bids = await TenderService.getBids(parseInt(id));
       return res.json(bids);
     } catch (err: any) {
       console.error("getBids error:", err);

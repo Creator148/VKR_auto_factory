@@ -29,11 +29,11 @@ class TenderService {
     return mockContracts.submitBid(tenderId, supplierAddress, price, deliveryTime, metadataCID);
   }
 
-  async awardBid(tenderId: string, bidId: string, callerAddress: string) {
+  async awardBid(tenderId: number, bidId: number, callerAddress: string) {
     return mockContracts.awardBid(tenderId, bidId, callerAddress);
   }
 
-  async getBids(tenderId: string) {
+  async getBids(tenderId: number) {
     return mockContracts.getBids(tenderId);
   }
 }

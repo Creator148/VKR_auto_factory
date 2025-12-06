@@ -13,7 +13,7 @@ class SupplierController {
 
   async getOne(req: Request, res: Response) {
     try {
-      const supplier = await SupplierService.getOne(req.params.id);
+      const supplier = await SupplierService.getOne(parseInt(req.params.id));
       res.json(supplier);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -41,7 +41,7 @@ class SupplierController {
 
   async getWonTenders(req: Request, res: Response) {
     try {
-      const tenders = await SupplierService.getSupplierWonTenders(req.params.id);
+      const tenders = await SupplierService.getSupplierWonTenders(parseInt(req.params.id));
       res.json(tenders);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
