@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { sequelize } from "./db/config";
 import "./models"; 
-
+import workflowRoutes from "./routes/workflow.routes";
 import tenderRoutes from "./routes/tender.routes";
 import shipmentRoutes from "./routes/shipment.routes";
 import paymentRoutes from "./routes/payment.routes";
@@ -23,6 +23,7 @@ app.use("/api/shipments", shipmentRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/bids", bidRoutes);
 app.use("/api/suppliers", supplierRoutes);
+app.use("/api/workflow", workflowRoutes);
 
 
 const start = async () => {
