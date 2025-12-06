@@ -5,7 +5,7 @@ class SupplierService {
     return Supplier.findAll();
   }
 
-  async getOne(id: string) {
+  async getOne(id: number) {
     return Supplier.findByPk(id);
   }
 
@@ -20,7 +20,7 @@ class SupplierService {
     });
   }
 
-  async getSupplierWonTenders(id: string) {
+  async getSupplierWonTenders(id: number) {
     return Tender.findAll({
       where: { winnerId: id },
     });

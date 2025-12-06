@@ -20,7 +20,7 @@ class TenderService {
   }
 
   async submitBid(
-    tenderId: string,
+    tenderId: number,
     supplierAddress: string,
     price: number,
     deliveryTime: string,

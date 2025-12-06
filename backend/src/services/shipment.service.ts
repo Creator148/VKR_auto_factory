@@ -4,7 +4,7 @@ import { Op } from "sequelize";
 import { isNull } from "util";
 
 export interface CreateShipmentDTO {
-  tenderId: string;
+  tenderId: number;
   shipperAddress: string;
   trackingId: string;
   eta: string;             
@@ -42,7 +42,7 @@ export class ShipmentService {
     if (!shipment) throw new Error("Shipment not found");
     return shipment;
   }
-  async getShipmentsByTenderId(tenderId: string) {
+  async getShipmentsByTenderId(tenderId: number) {
     if (isNull(tenderId)) throw new Error("Invalid tenderId");
 
     return Shipment.findAll({

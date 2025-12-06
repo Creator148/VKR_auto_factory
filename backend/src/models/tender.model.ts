@@ -2,7 +2,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../db/config";
 
 interface TenderAttributes {
-  id: string;
+  id: number;
   title: string;
   description: string;
   budget: number;
@@ -18,7 +18,7 @@ export class Tender
   extends Model<TenderAttributes, TenderCreationAttributes>
   implements TenderAttributes
 {
-  public id!: string;
+  public id!: number;
   public title!: string;
   public description!: string;
   public budget!: number;
@@ -32,7 +32,7 @@ export class Tender
 Tender.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },

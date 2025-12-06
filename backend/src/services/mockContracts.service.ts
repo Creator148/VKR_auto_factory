@@ -10,7 +10,7 @@ import { Tender, Bid, Supplier, Shipment, Payment } from "../models";
  */
 
 type Escrow = {
-  tenderId: string;
+  tenderId: number;
   payer: string;
   beneficiary: string;
   amount: number;
@@ -18,7 +18,7 @@ type Escrow = {
 };
 
 export class MockSmartContractService extends EventEmitter {
-  private escrows = new Map<string, Escrow>(); // tenderId -> escrow
+  private escrows = new Map<number, Escrow>(); // tenderId -> escrow
 
   private txHash(): string {
     return "0x" + crypto.randomBytes(16).toString("hex");
@@ -68,7 +68,7 @@ export class MockSmartContractService extends EventEmitter {
    * Подать заявку (bid) на тендер.
    */
   async submitBid(
-    tenderId: string,
+    tenderId: number,
     supplierAddress: string,
     price: number,
     deliveryTime: string,
@@ -165,7 +165,7 @@ export class MockSmartContractService extends EventEmitter {
   /**
    * Депонирование средств в эскроу (in-memory)
    */
-  async depositFunds(tenderId: string, payerAddress: string, beneficiaryAddress: string, amount: number) {
+  async depositFunds(tenderId: number, payerAddress: string, beneficiaryAddress: string, amount: number) {
     const txHash = this.txHash();
 
     if (this.escrows.has(tenderId)) {
@@ -190,7 +190,7 @@ export class MockSmartContractService extends EventEmitter {
   /**
    * Выпустить платеж — создаёт Payment в БД и помечает эскроу как released.
    */
-  async releasePayment(tenderId: string, shipmentId?: number) {
+  async releasePayment(tenderId: number, shipmentId?: number) {
     const txHash = this.txHash();
 
     const escrow = this.escrows.get(tenderId);
@@ -228,7 +228,7 @@ export class MockSmartContractService extends EventEmitter {
     }
   }
 
-  async refund(tenderId: string, callerAddress: string) {
+  async refund(tenderId: number, callerAddress: string) {
     const txHash = this.txHash();
 
     const escrow = this.escrows.get(tenderId);
@@ -246,7 +246,7 @@ export class MockSmartContractService extends EventEmitter {
   /**
    * Record shipment
    */
-  async recordShipment(tenderId: string, shipperAddress: string, trackingId: string, eta: string, docCID?: string) {
+  async recordShipment(tenderId: number, shipperAddress: string, trackingId: string, eta: string, docCID?: string) {
     const txHash = this.txHash();
     const tx = await sequelize.transaction();
     try {
@@ -321,7 +321,7 @@ export class MockSmartContractService extends EventEmitter {
     }
   }
 
-  getEscrow(tenderId: string) {
+  getEscrow(tenderId: number) {
     return this.escrows.get(tenderId);
   }
 

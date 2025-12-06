@@ -2,7 +2,7 @@ import mockContracts from "./mockContracts.service";
 
 class PaymentService {
   async depositFunds(
-    tenderId: string,
+    tenderId: number,
     payerAddress: string,
     beneficiaryAddress: string,
     amount: number
@@ -10,26 +10,26 @@ class PaymentService {
     return mockContracts.depositFunds(tenderId, payerAddress, beneficiaryAddress, amount);
   }
 
-  async releasePayment(tenderId: string, shipmentId?: string) {
+  async releasePayment(tenderId: number, shipmentId?: number) {
     return mockContracts.releasePayment(tenderId, shipmentId);
   }
 
-  async refund(tenderId: string, callerAddress: string) {
+  async refund(tenderId: number, callerAddress: string) {
     return mockContracts.refund(tenderId, callerAddress);
   }
 
-  async getEscrow(tenderId: string) {
+  async getEscrow(tenderId: number) {
     return mockContracts.getEscrow(tenderId);
   }
 
-  async getPaymentsByTender(tenderId: string) {
+  async getPaymentsByTender(tenderId: number) {
     // В будущем можно через Payment.findAll()
     // пока сделаем через DB: Payment.findAll()
     const { Payment } = require("../models");
     return Payment.findAll({ where: { tenderId } });
   }
 
-  async getPaymentById(id: string) {
+  async getPaymentById(id: number) {
     const { Payment } = require("../models");
     return Payment.findByPk(id);
   }

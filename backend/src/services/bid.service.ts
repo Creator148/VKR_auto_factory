@@ -1,13 +1,13 @@
 import { Bid, Supplier, Tender } from "../models";
 
 class BidService {
-  async getBidById(id: string) {
+  async getBidById(id: number) {
     return Bid.findByPk(id, {
       include: [{ model: Supplier, as: "supplier" }],
     });
   }
 
-  async getBidsByTender(tenderId: string) {
+  async getBidsByTender(tenderId: number) {
     return Bid.findAll({
       where: { tenderId },
       include: [{ model: Supplier, as: "supplier" }],
@@ -22,7 +22,7 @@ class BidService {
   }
 
   async updateBid(
-    id: string,
+    id: number,
     data: { price?: number; deliveryTime?: string; comment?: string }
   ) {
     const bid = await Bid.findByPk(id);
@@ -34,7 +34,7 @@ class BidService {
     return bid;
   }
 
-  async deleteBid(id: string) {
+  async deleteBid(id: number) {
     const bid = await Bid.findByPk(id);
     if (!bid) throw new Error("Bid not found");
 
