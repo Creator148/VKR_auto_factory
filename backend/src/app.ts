@@ -7,6 +7,8 @@ import "./models";
 import tenderRoutes from "./routes/tender.routes";
 import shipmentRoutes from "./routes/shipment.routes";
 import paymentRoutes from "./routes/payment.routes";
+import bidRoutes from "./routes/bid.routes";
+import supplierRoutes from "./routes/supplier.routes";
 
 dotenv.config();
 
@@ -19,6 +21,9 @@ app.use(express.json());
 app.use("/api/tenders", tenderRoutes);
 app.use("/api/shipments", shipmentRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/bids", bidRoutes);
+app.use("/api/suppliers", supplierRoutes);
+
 
 const start = async () => {
   try {
