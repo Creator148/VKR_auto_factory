@@ -47,6 +47,9 @@ const HomePage = () => {
       <h1 className="text-4xl font-bold mt-10 text-gray-800">
         Smart Tender Workflow Demo
       </h1>
+      <div className="p-4 bg-red-500 text-white rounded-lg">
+        Test Tailwind
+      </div>
 
       <button
         onClick={startDemo}
