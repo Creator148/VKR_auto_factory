@@ -1,4 +1,4 @@
-import mockContracts from "./mockContracts.service";
+import mockContracts from "./Contracts.service";
 
 class TenderService {
   async createTender(

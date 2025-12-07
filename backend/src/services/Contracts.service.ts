@@ -3,12 +3,6 @@ import crypto from "crypto";
 import { sequelize } from "../db/config";
 import { Tender, Bid, Supplier, Shipment, Payment } from "../models";
 
-/**
- * MockSmartContractService
- * Эмулирует поведение контрактов: RFQ / Shipment / Payment.
- * Все идентификаторы — number (согласно моделям).
- */
-
 type Escrow = {
   tenderId: number;
   payer: string;
@@ -18,6 +12,35 @@ type Escrow = {
 };
 
 export class MockSmartContractService extends EventEmitter {
+  blockchain: Array<{
+  blockNumber: number;
+  txHash: string;
+  event: string;
+  payload: any;
+  timestamp: number;
+}> = [];
+
+private blockCounter = 1;
+
+private emitEvent(event: string, payload: any) {
+  const txHash = crypto.randomBytes(16).toString("hex");
+  const blockNumber = this.blockCounter++;
+
+  const entry = {
+    blockNumber,
+    txHash,
+    event,
+    payload,
+    timestamp: Date.now()
+  };
+
+  this.blockchain.push(entry);
+
+  console.log(`[EVENT] ${event}`, entry);
+
+  return entry;
+}
+
   private escrows = new Map<number, Escrow>(); // tenderId -> escrow
 
   private txHash(): string {
@@ -48,7 +71,7 @@ export class MockSmartContractService extends EventEmitter {
 
       await tx.commit();
 
-      this.emit("TenderCreated", {
+      this.emitEvent("TenderCreated", {
         txHash,
         tenderId: tender.id,
         requester: requesterAddress,
