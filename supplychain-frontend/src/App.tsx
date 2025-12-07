@@ -1,5 +1,12 @@
-import Home from "./pages/HomePage";
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import TenderPage from "./pages/TenderPage";
 
 export default function App() {
-  return <Home />;
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/tender/:id" element={<TenderPage />} />
+    </Routes>
+  );
 }
