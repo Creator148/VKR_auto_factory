@@ -49,6 +49,12 @@ const HomePage = () => {
       >
         {loading ? "Starting demo..." : "Start Demo Process"}
       </button>
+      <button
+        onClick={() => navigate("/explorer")}
+        className="mt-4 px-4 py-2 bg-gray-700 text-white rounded"
+      >
+        View Blockchain Explorer
+      </button>
     </div>
   );
 };
