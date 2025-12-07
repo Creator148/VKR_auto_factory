@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function TenderPage() {
   const { id } = useParams();
   const tenderId = id;
-
+  const navigate = useNavigate();
   const [tender, setTender] = useState<any>(null);
   const [bids, setBids] = useState<any[]>([]);
   const [shipments, setShipments] = useState<any[]>([]);
@@ -167,7 +168,16 @@ export default function TenderPage() {
             <b>Status:</b> {tender.status}
           </p>
         </div>
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => navigate(`/escrow/${id}`)}
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+          >
+            View Escrow
+          </button>
+        </div>
 
+        
         {/* Bids */}
         <div className="p-6 bg-white rounded-xl shadow space-y-4">
           <div className="flex justify-between items-center">
@@ -227,6 +237,7 @@ export default function TenderPage() {
             </div>
           ))}
         </div>
+
 
       </div>
 

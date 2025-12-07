@@ -10,6 +10,7 @@ import paymentRoutes from "./routes/payment.routes";
 import bidRoutes from "./routes/bid.routes";
 import supplierRoutes from "./routes/supplier.routes";
 import explorerRoutes from "./routes/explorer.routes";
+import escrowRoutes from "./routes/escrow.routes";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/api/bids", bidRoutes);
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/workflow", workflowRoutes);
 app.use("/api/explorer", explorerRoutes);
+app.use("/api/escrow", escrowRoutes);
 
 const start = async () => {
   try {

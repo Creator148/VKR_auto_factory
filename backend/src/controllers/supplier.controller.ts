@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import SupplierService from "../services/supplier.service";
+import { Bid, Shipment, Supplier } from "../models";
 
 class SupplierController {
   async getAll(req: Request, res: Response) {
@@ -36,6 +37,26 @@ class SupplierController {
       res.json(bids);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
+    }
+  }
+  async getProfile(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const supplier = await Supplier.findByPk(id);
+      if (!supplier) return res.status(404).json({ error: "Supplier not found" });
+
+      const bids = await Bid.findAll({ where: { supplierId: id } });
+
+      const shipments = await Shipment.findAll();
+
+      res.json({
+        supplier,
+        bids,
+        shipments
+      });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
     }
   }
 

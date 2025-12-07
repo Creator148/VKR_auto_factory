@@ -2,6 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import TenderPage from "./pages/TenderPage";
 import ExplorerPage from "./pages/ExplorerPage";
+import EscrowPage from "./pages/EscrowPage";
+import SupplierPage from "./pages/SupplierPage";
+import ContractViewer from "./pages/ScViewer";
 
 export default function App() {
   return (
@@ -9,6 +12,9 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/tender/:id" element={<TenderPage />} />
       <Route path="/explorer" element={<ExplorerPage />} />
+      <Route path="/escrow/:tenderId" element={<EscrowPage />} />
+      <Route path="/suppliers/:id/profile" element={<SupplierPage />} />
+      <Route path="/workflow/blocks" element={<ContractViewer />} />
     </Routes>
   );
 }

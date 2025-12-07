@@ -1,5 +1,5 @@
 import { Router } from "express";
-import mockContracts from "../services/Contracts.service";
+import mockContracts from "../services/contracts.service";
 
 const router = Router();
 

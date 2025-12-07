@@ -1,4 +1,4 @@
-import mockContracts from "./Contracts.service";
+import mockContracts from "./contracts.service";
 import { Shipment } from "../models";
 import { Op } from "sequelize";
 import { isNull } from "util";

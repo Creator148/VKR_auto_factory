@@ -1,4 +1,5 @@
-import mockContracts from "./Contracts.service";
+import { Tender } from "../models";
+import mockContracts from "./contracts.service";
 
 class TenderService {
   async createTender(
@@ -15,8 +16,9 @@ class TenderService {
   }
 
   async getAllTenders() {
-    // Можно сделать DB-level query, но MVP — через mockContracts
-    return []; // TODO: можно вернуть Tender.findAll()
+    return Tender.findAll({
+      order: [["createdAt", "DESC"]],
+    });
   }
 
   async submitBid(
@@ -30,7 +32,18 @@ class TenderService {
   }
 
   async awardBid(tenderId: number, bidId: number, callerAddress: string) {
-    return mockContracts.awardBid(tenderId, bidId, callerAddress);
+    const result = await mockContracts.awardBid(tenderId, bidId, callerAddress);
+
+    // Automatically create escrow after awarding
+    mockContracts.startEscrows[tenderId] = {
+      balance: 0,
+      locked: false,
+      payer: callerAddress,
+      payee: result.supplier,
+      history: []
+    };
+
+    return result;
   }
 
   async getBids(tenderId: number) {

@@ -1,4 +1,4 @@
-import mockContracts from "./Contracts.service";
+import mockContracts from "./contracts.service";
 
 class PaymentService {
   async depositFunds(

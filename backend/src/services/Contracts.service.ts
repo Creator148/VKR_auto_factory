@@ -11,7 +11,8 @@ type Escrow = {
   released: boolean;
 };
 
-export class MockSmartContractService extends EventEmitter {
+
+export class smartContractService extends EventEmitter {
   blockchain: Array<{
   blockNumber: number;
   txHash: string;
@@ -42,14 +43,90 @@ private emitEvent(event: string, payload: any) {
 }
 
   private escrows = new Map<number, Escrow>(); // tenderId -> escrow
+  startEscrows: Record<
+    number,
+    {
+      balance: number;
+      locked: boolean;
+      payer: string;
+      payee: string | null;
+      history: Array<{
+        type: "deposit" | "lock" | "release";
+        amount: number;
+        timestamp: number;
+      }>;
+    }
+  > = {};
 
   private txHash(): string {
     return "0x" + crypto.randomBytes(16).toString("hex");
   }
+  lockEscrow(tenderId: number, payee: string) {
+  const esc = this.startEscrows[tenderId];
+  if (!esc) throw new Error("No escrow exists");
 
-  /**
-   * Создать тендер
-   */
+  esc.locked = true;
+  esc.payee = payee;
+
+  esc.history.push({
+    type: "lock",
+    amount: 0,
+    timestamp: Date.now()
+  });
+
+  return this.emitEvent("EscrowLocked", {
+    tenderId,
+    payee
+  });
+}
+releaseFunds(tenderId: number) {
+  const esc = this.startEscrows[tenderId];
+  if (!esc || !esc.locked) throw new Error("Escrow not ready");
+
+  const releasedAmount = esc.balance;
+
+  esc.history.push({
+    type: "release",
+    amount: releasedAmount,
+    timestamp: Date.now()
+  });
+
+  return this.emitEvent("EscrowReleased", {
+    tenderId,
+    payee: esc.payee,
+    amount: releasedAmount
+  });
+}
+
+
+
+  depositFundsStart(tenderId: number, from: string, amount: number) {
+  if (!this.startEscrows[tenderId]) {
+    this.startEscrows[tenderId] = {
+      balance: 0,
+      locked: false,
+      payer: from,
+      payee: null,
+      history: []
+    };
+  }
+
+  this.startEscrows[tenderId].balance += amount;
+
+  this.startEscrows[tenderId].history.push({
+    type: "deposit",
+    amount,
+    timestamp: Date.now()
+  });
+
+  return this.emitEvent("EscrowDeposit", {
+    tenderId,
+    from,
+    amount,
+    balance: this.startEscrows[tenderId].balance
+  });
+}
+
   async createTender(
     requesterAddress: string,
     detailsCID: string,
@@ -70,6 +147,7 @@ private emitEvent(event: string, payload: any) {
       );
 
       await tx.commit();
+      
 
       this.emitEvent("TenderCreated", {
         txHash,
@@ -128,7 +206,7 @@ private emitEvent(event: string, payload: any) {
 
       await tx.commit();
 
-      this.emit("BidSubmitted", {
+      this.emitEvent("BidSubmitted", {
         txHash,
         tenderId: tender.id,
         bidId: bid.id,
@@ -170,7 +248,7 @@ private emitEvent(event: string, payload: any) {
 
       const supplier = await Supplier.findByPk(bid.supplierId);
 
-      this.emit("BidAwarded", {
+      this.emitEvent("BidAwarded", {
         txHash,
         tenderId,
         bidId,
@@ -205,7 +283,7 @@ private emitEvent(event: string, payload: any) {
 
     this.escrows.set(tenderId, escrow);
 
-    this.emit("FundsDeposited", { txHash, tenderId, payer: payerAddress, beneficiary: beneficiaryAddress, amount });
+    this.emitEvent("FundsDeposited", { txHash, tenderId, payer: payerAddress, beneficiary: beneficiaryAddress, amount });
 
     return { txHash, tenderId };
   }
@@ -236,7 +314,7 @@ private emitEvent(event: string, payload: any) {
 
       await tx.commit();
 
-      this.emit("PaymentReleased", {
+      this.emitEvent("PaymentReleased", {
         txHash,
         tenderId,
         beneficiary: escrow.beneficiary,
@@ -261,7 +339,7 @@ private emitEvent(event: string, payload: any) {
 
     this.escrows.delete(tenderId);
 
-    this.emit("RefundIssued", { txHash, tenderId, payer: callerAddress, amount: escrow.amount });
+    this.emitEvent("RefundIssued", { txHash, tenderId, payer: callerAddress, amount: escrow.amount });
 
     return { txHash, tenderId };
   }
@@ -289,7 +367,7 @@ private emitEvent(event: string, payload: any) {
 
       await tx.commit();
 
-      this.emit("ShipmentRecorded", {
+      this.emitEvent("ShipmentRecorded", {
         txHash,
         shipmentId: shipment.id,
         contractId: tenderId,
@@ -324,7 +402,7 @@ private emitEvent(event: string, payload: any) {
 
       await tx.commit();
 
-      this.emit("GoodsReceived", {
+      this.emitEvent("GoodsReceived", {
         txHash,
         shipmentId,
         contractId: tenderId,
@@ -359,5 +437,5 @@ private emitEvent(event: string, payload: any) {
   }
 }
 
-const mockContracts = new MockSmartContractService();
+const mockContracts = new smartContractService();
 export default mockContracts;
