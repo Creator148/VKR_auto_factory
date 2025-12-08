@@ -13,7 +13,7 @@ export default function App() {
       <Route path="/tender/:id" element={<TenderPage />} />
       <Route path="/explorer" element={<ExplorerPage />} />
       <Route path="/escrow/:tenderId" element={<EscrowPage />} />
-      <Route path="/suppliers/:id/profile" element={<SupplierPage />} />
+      <Route path="/supplier/:id" element={<SupplierPage />} />
       <Route path="/workflow/blocks" element={<ContractViewer />} />
     </Routes>
   );

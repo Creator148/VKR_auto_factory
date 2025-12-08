@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 export default function TenderPage() {
   const { id } = useParams();
@@ -22,7 +21,7 @@ export default function TenderPage() {
       setBids(b);
       setShipments(s);
     } catch (err) {
-      toast.error("Failed to load tender data");
+      toast.error("Ошибка загрузки данных тендера");
     }
   };
 
@@ -41,7 +40,6 @@ export default function TenderPage() {
       if (shipments.length > 0) return 4;
       return 3;
     }
-
     return 1;
   };
 
@@ -55,22 +53,22 @@ export default function TenderPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           supplierAddress: "Supplier_" + Math.floor(Math.random() * 1000),
-          price: Math.floor(Math.random() * 9000 + 1000),
-          deliveryTime: "5 days"
+          price: Math.floor(Math.random() * 90000 + 10000),
+          deliveryTime: "5 дней"
         })
       });
 
-      toast.success("Demo bid submitted");
+      toast.success("Заявка отправлена");
       await loadData();
     } catch {
-      toast.error("Failed to submit bid");
+      toast.error("Ошибка при отправке заявки");
     }
     setLoading(false);
   };
 
   const awardBestBid = async () => {
     if (bids.length === 0) {
-      toast.error("No bids to award");
+      toast.error("Нет предложений для выбора");
       return;
     }
 
@@ -84,10 +82,10 @@ export default function TenderPage() {
         body: JSON.stringify({ bidId: best.id, callerAddress: "demo_user" })
       });
 
-      toast.success("Bid awarded");
+      toast.success("Победитель назначен");
       await loadData();
     } catch {
-      toast.error("Failed to award bid");
+      toast.error("Не удалось назначить победителя");
     }
     setLoading(false);
   };
@@ -107,10 +105,10 @@ export default function TenderPage() {
         })
       });
 
-      toast.success("Shipment recorded");
+      toast.success("Отгрузка зарегистрирована");
       await loadData();
     } catch {
-      toast.error("Failed to record shipment");
+      toast.error("Ошибка регистрации отгрузки");
     }
     setLoading(false);
   };
@@ -121,35 +119,35 @@ export default function TenderPage() {
       await fetch(`http://localhost:5000/api/shipments/${shipmentId}/confirm`, {
         method: "POST"
       });
-      toast.success("Goods received");
+      toast.success("Поставка подтверждена");
       await loadData();
     } catch {
-      toast.error("Failed to confirm receipt");
+      toast.error("Не удалось подтвердить поставку");
     }
     setLoading(false);
   };
 
-  if (!tender) return <div className="p-6">Loading...</div>;
+  if (!tender) return <div className="p-6">Загрузка...</div>;
 
   return (
     <div className="flex h-screen">
 
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800 text-white p-6 space-y-6">
-        <h2 className="text-2xl font-bold">Tender #{tenderId}</h2>
+      <div className="w-64 bg-gray-900 text-white p-6 space-y-6">
+        <h2 className="text-2xl font-bold">Тендер #{tenderId}</h2>
 
         <div className="space-y-3">
           {[
-            "Tender Created",
-            "Bids Submitted",
-            "Bid Awarded",
-            "Shipment",
-            "Payment Completed"
+            "Создание тендера",
+            "Подача предложений",
+            "Выбор победителя",
+            "Отгрузка",
+            "Платёж завершён"
           ].map((label, idx) => (
             <div
               key={idx}
               className={`p-2 rounded-lg ${
-                step >= idx + 1 ? "bg-green-600" : "bg-gray-600"
+                step >= idx + 1 ? "bg-green-600" : "bg-gray-700"
               }`}
             >
               {label}
@@ -158,37 +156,37 @@ export default function TenderPage() {
         </div>
       </div>
 
-      {/* Main */}
+      {/* Main content */}
       <div className="flex-1 p-10 space-y-10 overflow-y-auto">
 
-        <div className="p-6 bg-white rounded-xl shadow-md">
+        <div className="p-6 bg-white rounded-xl shadow-md text-gray-900">
           <h1 className="text-3xl font-bold">{tender.title}</h1>
           <p className="text-gray-700 mt-2">{tender.description}</p>
           <p className="mt-2 text-lg">
-            <b>Status:</b> {tender.status}
+            <b>Статус:</b> {tender.status === "open" ? "Открыт" : tender.status}
           </p>
         </div>
+
         <div className="flex justify-end mb-4">
           <button
             onClick={() => navigate(`/escrow/${id}`)}
             className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
           >
-            View Escrow
+            Эскроу-счёт
           </button>
         </div>
 
-        
         {/* Bids */}
-        <div className="p-6 bg-white rounded-xl shadow space-y-4">
+        <div className="p-6 bg-white rounded-xl shadow space-y-4 text-gray-900">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Bids</h2>
+            <h2 className="text-xl font-semibold">Предложения поставщиков</h2>
 
             <div className="flex space-x-3">
               <button
                 onClick={submitBid}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg"
               >
-                Submit Demo Bid
+                Отправить демо-заявку
               </button>
 
               <button
@@ -196,51 +194,57 @@ export default function TenderPage() {
                 disabled={bids.length === 0}
                 className="px-4 py-2 bg-green-600 disabled:bg-gray-400 text-white rounded-lg"
               >
-                Award Best Bid
+                Выбрать лучшую заявку
               </button>
             </div>
           </div>
 
           {bids.map(b => (
             <div key={b.id} className="p-3 border rounded-lg">
-              Supplier: <b>{b.supplier?.name}</b>,
-              Price: <b>${b.price}</b>
+              Поставщик: <b>{b.supplier?.name ?? b.supplierAddress}</b>, Цена:{" "}
+              <b>{b.price} ₽</b>
             </div>
           ))}
+          <button
+            onClick={() => navigate(`/supplier/${tender.winnerSupplierId}`)}
+            className="px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Перейти к поставщику
+          </button>
         </div>
 
         {/* Shipments */}
-        <div className="p-6 bg-white rounded-xl shadow space-y-4">
-          <h2 className="text-xl font-semibold">Shipments</h2>
+        <div className="p-6 bg-white rounded-xl shadow space-y-4 text-gray-900">
+          <h2 className="text-xl font-semibold">Отгрузки</h2>
 
           {tender.status === "awarded" && (
             <button
               onClick={recordShipment}
               className="px-4 py-2 bg-purple-600 text-white rounded-lg"
             >
-              Record Shipment
+              Зарегистрировать отгрузку
             </button>
           )}
 
           {shipments.map(s => (
             <div key={s.id} className="p-3 border rounded-lg">
-              <p><b>{s.trackingId}</b> — {s.status}</p>
+              <p>
+                <b>{s.trackingId}</b> — {s.status === "delivered" ? "доставлено" : "в пути"}
+              </p>
 
               {s.status !== "delivered" && (
                 <button
                   onClick={() => confirmReceipt(s.id)}
                   className="mt-2 px-3 py-1 bg-orange-600 text-white rounded-lg"
                 >
-                  Confirm Receipt
+                  Подтвердить получение
                 </button>
               )}
             </div>
           ))}
         </div>
 
-
       </div>
-
     </div>
   );
 }

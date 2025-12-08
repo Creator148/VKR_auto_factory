@@ -8,7 +8,8 @@ export default function EscrowPage() {
   const loadEscrow = () => {
     fetch(`http://localhost:5000/api/escrow/${tenderId}`)
       .then(res => res.json())
-      .then(setEscrow);
+      .then(setEscrow)
+      .catch(() => setEscrow(null));
   };
 
   useEffect(() => {
@@ -40,53 +41,71 @@ export default function EscrowPage() {
     loadEscrow();
   };
 
-  if (!escrow)
+  if (!escrow) {
     return (
-      <div className="p-8 text-gray-500">
-        No escrow created yet for tender #{tenderId}
+      <div className="p-10 text-center text-gray-500 text-lg">
+        Эскроу-счёт для тендера #{tenderId} отсутствует
       </div>
     );
+  }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <h1 className="text-3xl font-bold text-gray-800">
-        Escrow Dashboard — Tender #{tenderId}
+    <div className="p-8 max-w-4xl mx-auto space-y-8 text-gray-900">
+      <h1 className="text-3xl font-bold">
+        Эскроу — Тендер #{tenderId}
       </h1>
 
       <div className="p-6 bg-white shadow rounded-lg">
-        <p className="text-xl">💰 Balance: <b>{escrow.balance}</b></p>
-        <p>Payer: {escrow.payer}</p>
-        <p>Payee: {escrow.payee ?? "—"}</p>
-        <p>Status: {escrow.locked ? "🔒 Locked" : "🟢 Open"}</p>
+        <p className="text-xl">
+          Баланс: <b>{escrow.balance} ₽</b>
+        </p>
+        <p>Плательщик: {escrow.payer}</p>
+        <p>Получатель: {escrow.payee ?? "—"}</p>
+        <p>
+          Статус: <b>{escrow.locked ? "Заблокирован" : "Открыт"}</b>
+        </p>
 
-        <div className="mt-4 flex gap-3">
-          <button onClick={deposit} className="px-4 py-2 bg-blue-600 text-white rounded">
-            Deposit Funds
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button
+            onClick={deposit}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Внести депозит
           </button>
 
-          <button onClick={lock} className="px-4 py-2 bg-yellow-500 text-white rounded">
-            Lock Escrow
+          <button
+            onClick={lock}
+            className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition"
+          >
+            Заблокировать эскроу
           </button>
 
-          <button onClick={release} className="px-4 py-2 bg-green-600 text-white rounded">
-            Release Funds
+          <button
+            onClick={release}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          >
+            Разблокировать / Выплатить
           </button>
         </div>
       </div>
 
       <div className="p-6 bg-white shadow rounded-lg">
-        <h2 className="text-xl font-bold mb-2">Transaction History</h2>
+        <h2 className="text-xl font-bold mb-3">История операций</h2>
 
         <ul className="space-y-2">
           {escrow.history.map((h: any, i: number) => (
-            <li key={i} className="border p-2 rounded text-sm">
-              <b>{h.type}</b> — {h.amount}  
+            <li key={i} className="border p-3 rounded text-sm">
+              <b>{h.type}</b> — {h.amount} ₽
               <br />
               <span className="text-gray-500">
                 {new Date(h.timestamp).toLocaleString()}
               </span>
             </li>
           ))}
+
+          {escrow.history.length === 0 && (
+            <p className="text-gray-400">Операций пока нет</p>
+          )}
         </ul>
       </div>
     </div>

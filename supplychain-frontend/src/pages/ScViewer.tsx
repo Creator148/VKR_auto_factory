@@ -10,20 +10,23 @@ export default function ContractViewer() {
   }, []);
 
   return (
-    <div className="p-10 grid grid-cols-3 gap-6">
+    <div className="p-10 grid grid-cols-3 gap-6 text-gray-900">
+
       <div className="col-span-1 bg-white rounded-lg shadow p-4">
-        <h2 className="text-xl font-bold mb-4">Blockchain</h2>
+        <h2 className="text-xl font-bold mb-4">Блокчейн-события</h2>
         {blocks.map((b: any) => (
           <div key={b.blockNumber} className="border-b py-2 text-sm">
-            Block #{b.blockNumber} — {b.event}
+            Блок #{b.blockNumber} — {b.event}
           </div>
         ))}
       </div>
 
       <div className="col-span-2 bg-white rounded-lg shadow p-4">
-        <h2 className="text-xl font-bold mb-4">Block Details</h2>
-        {/* Add selection + view logic */}
+        <h2 className="text-xl font-bold mb-4">Детали блока</h2>
+        {/* Позже прикрутим выбор блока */}
+        <p className="text-gray-500">Выберите блок слева...</p>
       </div>
+
     </div>
   );
 }
