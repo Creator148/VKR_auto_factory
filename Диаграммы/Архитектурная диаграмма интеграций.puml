@@ -49,10 +49,6 @@ BE --> EVT : Публикация событий
 EVT --> UI : Рассылка событий
 
 ' --- 3. СМАРТ-КОНТРАКТЫ (группировка) ---
-note on link: createTender(), submitBid()\nconfirmShipment(), releasePayment()\nи другие вызовы контрактов
-
-note on link: TenderCreated, BidSubmitted\nGoodsReceived, CertificateMinted\nи другие события
-
 ' --- 4. ИНТЕГРАЦИИ С ВНЕШНИМИ СИСТЕМАМИ ---
 ' Документы
 INT --> IPFS : Загрузка документов
