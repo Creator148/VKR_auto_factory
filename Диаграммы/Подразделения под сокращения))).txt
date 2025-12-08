@@ -1,0 +1,37 @@
+@startuml
+title Автоматизация и сокращение подразделений предприятия
+
+skinparam componentStyle rectangle
+
+package "Производственное предприятие" {
+
+  component "Отдел закупок\n(ручные тендеры,\nсогласования,\nбумаги)" as PURCH
+  component "Отдел логистики\n(приёмка, акты,\nфиксация поставок)" as LOG
+  component "Отдел качества\n(протоколы, акты,\nсертификация)" as QC
+  component "Техническая служба (ТОиР)\n(планирование,\nотчёты,\nбумаги)" as MAINT
+  component "Финансовый департамент\n(казначейство,\nсогласования платежей)" as FIN
+  component "Инвестиционный комитет\n(ручное голосование,\nбюджеты)" as IC
+}
+
+package "dApp-платформа" {
+  component "SupplyChain dApp\n(тендеры,\nпоставки,\nоплаты)" as SC
+  component "Maintenance dApp\n(ремонты,\nТОиР,\nзаявки)" as SD
+  component "QualityControl dApp\n(QC,\nсертификаты)" as QCD
+  component "Governance/DAO\n(голосования,\nбюджеты)" as DAO
+  component "IPFS\n(документы)" as IPFS
+  component "Blockchain\n(неизменяемые события)" as BC
+  component "IoT Sensors\n(NFC/GPS)" as IOT
+}
+
+PURCH -[dashed]-> SC : автоматизация тендеров\n↓ сокращение штата закупок
+LOG -[dashed]-> SC : автоматизация приёмки\n↓ сокращение логистов (бумажная часть)
+QC -[dashed]-> QCD : авто-протоколы, NFT сертификаты\n↓ меньше ручной работы
+MAINT -[dashed]-> SD : авто-заявки, авто-планирование\n↓ меньше инженеров-докладчиков
+FIN -[dashed]-> DAO : авто-платежи,\nисключение ручного казначейства\n↓ оптимизация персонала
+IC -[dashed]-> DAO : автоматизация голосований\n↓ исключение бумажных согласований
+
+SC --> IOT : автоматическая фиксация поставок
+SC --> IPFS
+QCD --> IPFS
+DAO --> BC : фиксация решений
+@enduml

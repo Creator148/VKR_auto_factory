@@ -1,0 +1,27 @@
+@startuml
+title Интеграция dApp-платформы с цифровым рублём
+
+skinparam componentStyle rectangle
+
+component "dApp Backend" as BE
+component "Smart Contracts\n(Ethereum/EVM)" as SC
+component "Digital Ruble Gateway\n(API Банка России)" as DR
+component "Digital Ruble Wallet\nпредприятия" as DRW
+component "ERP System\n(учёт бюджета)" as ERP
+component "IoT Sensors\n(NFC/GPS)" as IOT
+component "IPFS\nДокументы" as IPFS
+
+SC --> DR : запрос на оплату\n(escrow / release)
+DR --> DRW : списание цифровых рублей
+DRW --> DR : подтверждение платежа
+DR --> BE : webhook: paymentConfirmed
+
+BE --> ERP : reserveBudget(), decreaseBudget()
+ERP --> BE : budgetStatus()
+
+IOT --> BE : событие поставки
+BE --> SC : confirmShipment()
+
+SC --> IPFS : записи хешей\n(акты, спецификации)
+
+@enduml
