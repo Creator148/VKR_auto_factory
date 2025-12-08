@@ -1,0 +1,82 @@
+@startuml
+title Архитектурная схема интеграций dApp платформы предприятия
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+' === ВНЕШНИЕ СИСТЕМЫ ===
+component "ERP System" as ERP
+component "IoT Sensors\n(NFC, QR, GPS)" as IoT
+component "IPFS Node\n(Документы)" as IPFS
+component "Blockchain Network\n(Ethereum / EVM)" as BC
+component "Payment Gateway" as PAY
+component "MES\n(производственные события)" as MES
+component "Client Portal\n(Проверка сертификатов)" as CLIENT
+component "Audit Portal\n(Аудит финансов)" as AUDIT
+
+' === КЛЮЧЕВЫЕ МОДУЛИ dApp ПЛАТФОРМЫ ===
+package "Enterprise dApp Platform" {
+
+  component #56de47 "Web UI\n(React + Web3)" as UI
+
+  component #56de47 "Backend API\n(Node/TS)" as BE
+  component "Integrator Service\n(Java/Spring)" as INT
+  component #56de47 "Event Service\n(WebSockets)" as EVT
+
+  component #56de47 "Off-chain DB\n(PostgreSQL)" as DB
+
+  package "Smart Contracts" {
+    component #56de47 "RFQContract\nТендеры" as SC_RFQ
+    component #56de47 "BidContract\nПредложения" as SC_BID
+    component #56de47 "ShipmentContract\nПоставки" as SC_SHIP
+    component #56de47 "PaymentContract\nПлатежи" as SC_PAY
+    component "MaintenanceContract\nРемонты" as SC_MAINT
+    component "QCContract\nКонтроль качества" as SC_QC
+    component "CertificateNFT\nСертификаты качества" as SC_CERT
+    component "DAO Governance\nГолосования/бюджеты" as SC_DAO
+  }
+}
+
+' === ИНТЕГРАЦИОННЫЕ ПОТОКИ ===
+
+' --- 1. ПОЛЬЗОВАТЕЛЬСКИЙ ИНТЕРФЕЙС ---
+UI --> BE : REST API / WebSocket\nВсе бизнес-операции
+BE --> UI : Ответы / PUSH-уведомления
+
+' --- 2. БИЗНЕС-ЛОГИКА И ХРАНЕНИЕ ---
+BE --> DB : CRUD операции\n(метаданные, статусы, логи)
+BE --> EVT : Публикация событий
+EVT --> UI : Рассылка событий
+
+' --- 3. СМАРТ-КОНТРАКТЫ (группировка) ---
+note on link: createTender(), submitBid()\nconfirmShipment(), releasePayment()\nи другие вызовы контрактов
+
+note on link: TenderCreated, BidSubmitted\nGoodsReceived, CertificateMinted\nи другие события
+
+' --- 4. ИНТЕГРАЦИИ С ВНЕШНИМИ СИСТЕМАМИ ---
+' Документы
+INT --> IPFS : Загрузка документов
+
+' ERP
+ERP --> INT : Спецификации заказов\nРезервирование бюджета
+
+' IoT
+IoT --> INT : События отгрузки\n(NFC, GPS, timestamp)
+
+' MES
+MES --> INT : События производства
+
+' --- 5. ПЛАТЕЖИ И БЛОКЧЕЙН ---
+BC --> PAY : Платежи через эскроу
+PAY --> BE : Webhook подтверждения
+
+' --- 6. ВНЕШНИЙ ДОСТУП ---
+' Верификация сертификатов
+CLIENT --> SC_CERT : Проверка токена
+CLIENT --> IPFS : Получение документа
+
+' Аудит
+AUDIT --> BE : Read-only API\n(финансы, транзакции, бюджеты)
+BE --> BC : Запрос логов транзакций
+
+@enduml
