@@ -1,0 +1,74 @@
+@startuml
+title SupplyChain dApp — Development Architecture Overview
+left to right direction
+package "Repository Structure" {
+  [frontend/] as FE
+  [contracts/] as SC
+  [backend/] as BE
+  [config/] as CFG
+}
+
+package "Frontend (React + TypeScript)" {
+    component HomePage
+    component SupplierPage
+    component SCViewerPage
+    component TenderPage
+    component RequestPage
+    component ShipmentPage
+    component StatsPage
+
+    component "Web3 Integration\n(ethers.js)" as Web3
+    component "Router\n(React Router)" as Router
+}
+
+package "Smart Contracts (Solidity + Hardhat)" {
+    component "TenderContract"
+    component "BidContract"
+    component "ShipmentContract"
+    component "PaymentContract"
+}
+
+package "Blockchain Layer" {
+    node "EVM Node\n(Hardhat)" as Blockchain
+}
+
+package "IPFS Layer" {
+    node "IPFS Gateway API" as IPFS
+}
+
+package "Backend Layer" {
+    component "Node.js API" as API
+    component "IPFS Proxy" as IPFSProxy
+}
+
+FE --> Router
+FE --> Web3
+
+Router --> HomePage
+Router --> SupplierPage
+Router --> SCViewerPage
+Router --> TenderPage
+Router --> RequestPage
+Router --> ShipmentPage
+Router --> StatsPage
+
+Web3 --> TenderContract
+Web3 --> BidContract
+Web3 --> ShipmentContract
+Web3 --> PaymentContract
+
+TenderContract --> Blockchain
+BidContract --> Blockchain
+ShipmentContract --> Blockchain
+PaymentContract --> Blockchain
+
+FE --> API
+API --> Blockchain
+API --> IPFSProxy
+IPFSProxy --> IPFS
+
+CFG --> FE
+CFG --> SC
+CFG --> BE
+
+@enduml
