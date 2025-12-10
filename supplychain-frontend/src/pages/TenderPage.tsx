@@ -12,6 +12,7 @@ import {
   Table,
   Tag,
   Space,
+  Steps,
 } from "antd";
 
 const { Header, Content, Footer } = Layout;
@@ -28,7 +29,6 @@ const TenderHeader = ({
   title: string;
   onCreateDemo?: () => void;
 }) => {
-  // Цвет тега в зависимости от статуса
   const tagColor =
     status === "open" ? "green" : status === "awarded" ? "blue" : "default";
 
@@ -37,7 +37,7 @@ const TenderHeader = ({
       style={{ padding: 24, background: "#fff", borderRadius: 8, marginBottom: 24 }}
     >
       {/* Строка с id и статусом */}
-      <Row align="middle" style={{ marginBottom: 0 }}>
+      <Row align="middle" style={{ marginBottom: 2 }}>
         <Text strong style={{ fontSize: 14 }}>
           ID #{tenderId}
         </Text>
@@ -200,6 +200,17 @@ export default function TenderPage() {
 
   if (!tender) return <div className="p-6">Загрузка...</div>;
 
+  // Определяем текущий шаг для Steps
+  const step = (() => {
+    if (tender.status === "open") return bids.length > 0 ? 1 : 0;
+    if (tender.status === "awarded") {
+      if (shipments.some((s) => s.status === "delivered")) return 4;
+      if (shipments.length > 0) return 3;
+      return 2;
+    }
+    return 0;
+  })();
+
   const bidColumns = [
     {
       title: "Поставщик",
@@ -233,6 +244,15 @@ export default function TenderPage() {
     },
   ];
 
+  // Шаги тендера
+  const stepsItems = [
+    { title: "Создание тендера" },
+    { title: "Подача предложений" },
+    { title: "Выбор победителя" },
+    { title: "Отгрузка" },
+    { title: "Платёж завершён" },
+  ];
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Header style={{ display: "flex", alignItems: "center" }}>
@@ -257,12 +277,14 @@ export default function TenderPage() {
           onCreateDemo={submitBid}
         />
 
+        {/* Steps тендера */}
         <div style={{ marginBottom: 24, background: "#fff", padding: 24, borderRadius: 8 }}>
-          <Col>
-              <Title level={4} style={{ margin: 0 }}>
-                Описание тендера
-              </Title>
-            </Col>
+          <Steps current={step} direction="horizontal" items={stepsItems.map((item) => ({ title: item.title }))} />
+        </div>
+
+        {/* Описание тендера */}
+        <div style={{ marginBottom: 24, background: "#fff", padding: 24, borderRadius: 8 }}>
+          <Title level={4}>Описание тендера</Title>
           <p>{tender.description}</p>
           {tender.winnerSupplierId && (
             <Button onClick={() => navigate(`/supplier/${tender.winnerSupplierId}`)}>
@@ -275,9 +297,7 @@ export default function TenderPage() {
         <div style={{ marginBottom: 24, background: "#fff", padding: 24, borderRadius: 8 }}>
           <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
             <Col>
-              <Title level={4} style={{ margin: 0 }}>
-                Предложения поставщиков
-              </Title>
+              <Title level={4}>Предложения поставщиков</Title>
             </Col>
             <Col>
               <Space>
@@ -297,18 +317,14 @@ export default function TenderPage() {
         <div style={{ marginBottom: 24, background: "#fff", padding: 24, borderRadius: 8 }}>
           <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
             <Col>
-              <Title level={4} style={{ margin: 0 }}>
-                Отгрузки
-              </Title>
+              <Title level={4}>Отгрузки</Title>
             </Col>
             <Col>
-              <Space>
-                 {tender.status === "awarded" && (
-            <Button style={{ marginBottom: 16 }} onClick={recordShipment} type="primary">
-              Зарегистрировать отгрузку
-            </Button>
-                 )}
-              </Space>
+              {tender.status === "awarded" && (
+                <Button style={{ marginBottom: 16 }} onClick={recordShipment} type="primary">
+                  Зарегистрировать отгрузку
+                </Button>
+              )}
             </Col>
           </Row>
           <Table
