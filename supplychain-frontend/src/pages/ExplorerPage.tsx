@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
-import { Button } from 'antd';
+import { useNavigate } from "react-router-dom";
+import {
+  Layout,
+  Menu,
+  Breadcrumb,
+  Typography,
+  Table,
+  Tag,
+} from "antd";
 
+const { Header, Content, Footer } = Layout;
+const { Title, Text } = Typography;
 
 interface EventLog {
   blockNumber: number;
@@ -11,60 +21,140 @@ interface EventLog {
 }
 
 export default function ExplorerPage() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<EventLog[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     fetch("http://localhost:5000/api/explorer/events")
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setEvents)
-      .catch(() => setEvents([]));
+      .catch(() => setEvents([]))
+      .finally(() => setLoading(false));
   }, []);
 
+  const menuItems = [
+    { key: "tenders", label: "Тендеры", onClick: () => navigate("/tenders") },
+    { key: "analytics", label: "Статистика", onClick: () => navigate("/analytics") },
+    { key: "suppliers", label: "Поставщики", onClick: () => navigate("/suppliers") },
+    { key: "explorer", label: "Блокчейн-транзакции", onClick: () => navigate("/explorer") },
+  ];
+
+  const columns = [
+    {
+      title: "Блок",
+      dataIndex: "blockNumber",
+      key: "blockNumber",
+      width: 100,
+    },
+    {
+      title: "Tx Hash",
+      dataIndex: "txHash",
+      key: "txHash",
+      render: (hash: string) => (
+        <Text code copyable style={{ fontSize: 12 }}>
+          {hash}
+        </Text>
+      ),
+    },
+    {
+      title: "Событие",
+      dataIndex: "event",
+      key: "event",
+      render: (event: string) => <Tag color="blue">{event}</Tag>,
+      width: 180,
+    },
+    {
+      title: "Время",
+      dataIndex: "timestamp",
+      key: "timestamp",
+      width: 200,
+      render: (ts: number) => new Date(ts).toLocaleString(),
+    },
+    {
+      title: "Данные",
+      dataIndex: "payload",
+      key: "payload",
+      render: (payload: any) => (
+        <pre
+          style={{
+            maxWidth: 400,
+            maxHeight: 200,
+            overflow: "auto",
+            background: "#f5f5f5",
+            padding: 8,
+            borderRadius: 4,
+            fontSize: 12,
+          }}
+        >
+          {JSON.stringify(payload, null, 2)}
+        </pre>
+      ),
+    },
+  ];
+
   return (
-    <div className="p-8 text-gray-900">
-      <h1 className="text-3xl font-bold mb-6">
-        Обзор событий блокчейна
-      </h1>
+    <Layout style={{ minHeight: "100vh" }}>
+      {/* Header */}
+      <Header style={{ display: "flex", alignItems: "center" }}>
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          defaultSelectedKeys={["explorer"]}
+          items={menuItems}
+          style={{ flex: 1 }}
+        />
+      </Header>
 
-      <div className="bg-white shadow rounded-lg p-4 overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="border-b font-semibold text-gray-700">
-            <tr>
-              <th className="py-2 text-left">Блок</th>
-              <th className="py-2 text-left">Tx Hash</th>
-              <th className="py-2 text-left">Событие</th>
-              <th className="py-2 text-left">Время</th>
-              <th className="py-2 text-left">Данные</th>
-            </tr>
-          </thead>
+      {/* Content */}
+      <Content style={{ padding: "24px 48px" }}>
+        <Breadcrumb
+          style={{ marginBottom: 16 }}
+          items={[{ title: "Home" }, { title: "Blockchain Explorer" }]}
+        />
 
-          <tbody>
-            {events.map(ev => (
-              <tr key={ev.txHash} className="border-b hover:bg-gray-50">
-                <td className="py-2">{ev.blockNumber}</td>
-                <td className="py-2 font-mono text-blue-600">{ev.txHash}</td>
-                <td className="py-2">{ev.event}</td>
-                <td className="py-2">
-                  {new Date(ev.timestamp).toLocaleString()}
-                </td>
-                <td className="py-2 text-xs max-w-lg">
-                  <pre className="whitespace-pre-wrap">
-                    {JSON.stringify(ev.payload, null, 2)}
-                  </pre>
-                </td>
-              </tr>
-            ))}
+        {/* Заголовок */}
+        <div
+          style={{
+            background: "#fff",
+            padding: 24,
+            borderRadius: 8,
+            marginBottom: 24,
+          }}
+        >
+          <Title level={3} style={{ margin: 0 }}>
+            Обзор событий блокчейна
+          </Title>
+        </div>
 
-            {events.length === 0 && (
-              <tr>
-                <td colSpan={5} className="py-6 text-center text-gray-400">
-                  Событий пока нет…
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+        {/* Таблица */}
+        <div
+          style={{
+            background: "#fff",
+            padding: 24,
+            borderRadius: 8,
+          }}
+        >
+          <Table
+            columns={columns}
+            dataSource={events.map((e) => ({
+              ...e,
+              key: `${e.txHash}-${e.blockNumber}`,
+            }))}
+            loading={loading}
+            pagination={{ pageSize: 10 }}
+            locale={{
+              emptyText: "Событий пока нет",
+            }}
+          />
+        </div>
+      </Content>
+
+      {/* Footer */}
+      <Footer style={{ textAlign: "center" }}>
+        Ant Design ©{new Date().getFullYear()} Created by Ant UED
+      </Footer>
+    </Layout>
   );
 }

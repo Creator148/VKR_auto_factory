@@ -1,33 +1,71 @@
 import { useEffect, useState } from "react";
-import { Button } from 'antd';
+import { Card, Row, Col, Statistic, Progress } from "antd";
+import { Pie, Column } from "@ant-design/plots";
 
-
-export default function ContractViewer() {
-  const [blocks, setBlocks] = useState([]);
+export default function Dashboard() {
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/workflow/blocks")
+    fetch("http://localhost:5000/api/stats/dashboard")
       .then(r => r.json())
-      .then(setBlocks);
+      .then(setData);
   }, []);
 
+  if (!data) return <div>Loading...</div>;
+
+  const tenderPieData = [
+    { type: "Завершены", value: data.tenders.completed },
+    { type: "Открыты", value: data.tenders.total - data.tenders.completed }
+  ];
+
+  const paymentPieData = [
+    { type: "Оплачены", value: data.payments.paid },
+    { type: "Не оплачены", value: data.payments.total - data.payments.paid }
+  ];
+
   return (
-    <div className="p-10 grid grid-cols-3 gap-6 text-gray-900">
+    <div className="p-10 space-y-6">
 
-      <div className="col-span-1 bg-white rounded-lg shadow p-4">
-        <h2 className="text-xl font-bold mb-4">Блокчейн-события</h2>
-        {blocks.map((b: any) => (
-          <div key={b.blockNumber} className="border-b py-2 text-sm">
-            Блок #{b.blockNumber} — {b.event}
-          </div>
-        ))}
-      </div>
+      <Row gutter={16}>
+        <Col span={6}><Card><Statistic title="Всего тендеров" value={data.tenders.total} /></Card></Col>
+        <Col span={6}><Card><Statistic title="Всего поставок" value={data.shipments.total} /></Card></Col>
+        <Col span={6}><Card><Statistic title="Всего платежей" value={data.payments.total} /></Card></Col>
+        <Col span={6}><Card><Statistic title="Общий объём выплат" value={data.payments.totalVolume} /></Card></Col>
+      </Row>
 
-      <div className="col-span-2 bg-white rounded-lg shadow p-4">
-        <h2 className="text-xl font-bold mb-4">Детали блока</h2>
-        {/* Позже прикрутим выбор блока */}
-        <p className="text-gray-500">Выберите блок слева...</p>
-      </div>
+      <Row gutter={16}>
+        <Col span={8}>
+          <Card title="Завершённость тендеров">
+            <Progress percent={Number(data.tenders.completionRate.toFixed(1))} />
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Card title="Доставка">
+            <Progress percent={Number(data.shipments.deliveryRate.toFixed(1))} />
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Card title="Успешность платежей">
+            <Progress percent={Number(data.payments.successRate.toFixed(1))} />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={12}>
+          <Card title="Статус тендеров">
+            <Pie data={tenderPieData} angleField="value" colorField="type" />
+          </Card>
+        </Col>
+
+        <Col span={12}>
+          <Card title="Статус платежей">
+            <Pie data={paymentPieData} angleField="value" colorField="type" />
+          </Card>
+        </Col>
+      </Row>
 
     </div>
   );
